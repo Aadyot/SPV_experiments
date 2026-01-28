@@ -266,7 +266,7 @@ def Q_f_avg(q_mag, r_t, r_0, n_theta = 1, a=0.3):
     #r_t should be (n_time, n_points, 2)
     thetas = np.linspace(0, 2*np.pi, n_theta, endpoint = False)
     qs = q_mag * np.stack([np.cos(thetas), np.sin(thetas)], axis=1)
-    return Q_f(qs, r_t, r_0, a).mean(axis = -1)     #mean over qs. output is (n_time,)
+    return Q_f(qs, r_t, r_0, a)     #mean over qs. output is (n_time, n_theta)
 
 def get_all_Q_f_s(data, q_mag, n_theta = 1):
     data2 = {}
@@ -278,15 +278,15 @@ def get_all_Q_f_s(data, q_mag, n_theta = 1):
 
 ############################################# S4 CALCULATION FUNCTIONS #####################################################
 
-def S4(q, disps):
+def S4(q, disps, n_theta = 10):
     T1 = 0
     T2 = 0 
     for i in disps.keys():
         timestamps, arrs, N = disps[i]
-        Q_pos_data = get_all_Q_f_s(disps, q, 1)   #choose 1 direction. not many thetas needed
-        Q_neg_data = get_all_Q_f_s(disps, -q, 1)
-        T1 += (Q_pos_data[i][3] * Q_neg_data[i][3])
-        T2 += Q_pos_data[i][3]
+        Q_pos_data = get_all_Q_f_s(disps, q, n_theta)   #choose 1 direction. not many thetas needed
+        Q_neg_data = get_all_Q_f_s(disps, -q, n_theta)
+        T1 += (Q_pos_data[i][3] * Q_neg_data[i][3]).mean(axis = -1)
+        T2 += (Q_pos_data[i][3]**2).mean(axis = -1)
     T1 /= len(disps.keys())
-    T2 = (T2 / len(disps.keys()))**2
+    T2 = T2/(len(disps.keys()))**2
     return (T1 - T2)/disps[1][2]  #normalize by N
