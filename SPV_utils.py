@@ -291,3 +291,42 @@ def S4(q, disps, n_theta = 10):
     T1 /= len(disps.keys())
     T2 /= len(disps.keys())
     return (T1 - T2**2)/disps[1][2]  #normalize by N
+
+
+import pickle
+import glob
+
+
+def load_T_alpha_results(Ns=None, path="."):
+    """
+    Reconstructs:
+        T_alpha_results[N] = T_alpha_ind
+    """
+    T_alpha_results = {}
+
+    files = glob.glob(f"{path}/T_alpha_*.pkl")
+    for fname in files:
+        with open(fname, "rb") as f:
+            data = pickle.load(f)
+            N = data["N"]
+            if Ns is None or N in Ns:
+                T_alpha_results[N] = data["T_alpha_ind"]
+
+    return T_alpha_results
+
+
+def load_S4s_all(Ns=None, path="."):
+    """
+    Reconstructs:
+        S4s_all[N] = {q: S4(q)}
+    """
+    S4s_all = {}
+
+    files = glob.glob(f"{path}/S4_*.pkl")
+    for fname in files:
+        N = int(fname.split("_")[-1].replace(".pkl", ""))
+        if Ns is None or N in Ns:
+            with open(fname, "rb") as f:
+                S4s_all[N] = pickle.load(f)
+
+    return S4s_all
