@@ -284,11 +284,10 @@ def S4(q, disps, n_theta = 10):
     T1 = 0
     T2 = 0 
     for i in disps.keys():
-        timestamps, arrs, N = disps[i]
         Q_pos_data = get_all_Q_f_s(disps, q, n_theta)   #choose 1 direction. not many thetas needed
         Q_neg_data = get_all_Q_f_s(disps, -q, n_theta)
         T1 += (Q_pos_data[i][3] * Q_neg_data[i][3]).mean(axis = -1)
-        T2 += (Q_pos_data[i][3]**2).mean(axis = -1)
+        T2 += (Q_pos_data[i][3]).mean(axis = -1)
     T1 /= len(disps.keys())
-    T2 = T2/(len(disps.keys()))**2
-    return (T1 - T2)/disps[1][2]  #normalize by N
+    T2 /= len(disps.keys())
+    return (T1 - T2**2)/disps[1][2]  #normalize by N
