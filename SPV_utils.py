@@ -54,7 +54,7 @@ def get_all_data(foldername = "./100_Ensemble/N=400_pin=0/N=400/coordinate_p0=3.
 
 ############################################### DATA LOADING FUNCTIONS (npy) #####################################################
 
-def get_all_data_npy(filename, get_displacements = True):
+def get_all_data_npy(filename, get_displacements = True, n_ensembles = None):
     data = {}
     
     # Find all numbered subdirectories
@@ -78,6 +78,8 @@ def get_all_data_npy(filename, get_displacements = True):
             arrays = arrays - arrays[0]
         N = arrays[0].shape[0]
         data[idx] = (timestamps, arrays, N)
+        if n_ensembles is not None and idx > n_ensembles:
+            break
     return data
 
 @lru_cache(maxsize=128)
