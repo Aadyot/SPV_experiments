@@ -283,16 +283,15 @@ def get_all_Q_f_s(data, q_mag, n_theta = 1):
 def S4(q, disps, n_theta = 10):
     T1 = 0
     T2 = 0 
+    Q_data = get_all_Q_f_s(disps, q, n_theta)   #choose 1 direction. not many thetas needed
     for i in disps.keys():
-        Q_pos_data = get_all_Q_f_s(disps, q, n_theta)   #choose 1 direction. not many thetas needed
-        Q_neg_data = get_all_Q_f_s(disps, -q, n_theta)
-        T1 += (Q_pos_data[i][3] * Q_neg_data[i][3]).mean(axis = -1)
-        T2 += (Q_pos_data[i][3]).mean(axis = -1)
+        T1 += (Q_data[i][3] * np.conj(Q_data[i][3])).mean(axis = -1)
+        T2 += (Q_data[i][3]).mean(axis = -1)
     T1 /= len(disps.keys())
     T2 /= len(disps.keys())
     return (T1 - T2**2)/disps[1][2]  #normalize by N
 
-
+########################################### Load pkl #######################################################################
 import pickle
 import glob
 
